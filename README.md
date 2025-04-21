@@ -17,6 +17,7 @@ I'm here with a bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation.
   - [Widget height and width](#widget-height-and-width)
 - [TRMNL Framework](#trmnl-framework)
   - [Rotated .item indexes](#rotated-item-indexes)
+  - [QR codes](#qr-codes)
 
 ## Metadata and general tips
 
@@ -109,3 +110,28 @@ No need for `translate: transform` headaches! If you want rotated labels on an [
   text-orientation: mixed;
 }
 ```
+
+### QR Codes
+
+To display a QR code, insert a `<div data-qr-mode="{MODE}"></div>` element. Depending on the mode, it may also contain:
+
+- `text`: The element's inner text will be used as the text to display in the QR code.
+- `wifi`: The `data-wifi-ssid` and `data-wifi-password` attributes are used.
+  
+  You may also, optionally, specify `data-wifi-encryption` (by default, WPA is used) or a bare `data-wifi-hidden` for a hidden network.
+
+Then, at the bottom of the page (the order is important!), place:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://raw.githubusercontent.com/yunruse/trmnl-tricks/refs/heads/main/QR.js"></script>
+<style>
+  [data-qr-mode] {
+    border: 10px solid white;
+  }
+</style>
+```
+
+
+
+# Credits
