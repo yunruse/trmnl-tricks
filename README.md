@@ -119,12 +119,36 @@ No need for `translate: transform` headaches! If you want rotated labels on an [
 
 ### QR Codes
 
-To display a QR code, insert a `<div data-qr-mode="{MODE}"></div>` element. Depending on the mode, it may also contain:
+To display a QR code, insert a `<div data-qr-mode="{MODE}"></div>` element, and then add a handful of code at the bottom of your page (see the bottom of this section).
 
-- `text`: The element's inner text will be used as the text to display in the QR code.
+Depending on the mode, that `<div>` may contain:
+
+- `text`: The element's inner text will be used as the text to display in the QR code. This can also work for:
+  - URLs starting with `http://` or `https://`
+  - email addresses with `mailto:` before them
+  - telephone numbers with `tel:` before them
+
+- `sms`: The `data-sms-number` attribute is used; optionally you can add `data-sms-message`.
 - `wifi`: The `data-wifi-ssid` and `data-wifi-password` attributes are used.
   
   You may also, optionally, specify `data-wifi-encryption` (by default, WPA is used) or a bare `data-wifi-hidden` for a hidden network.
+
+> [!TIP]
+> **If your QR code is in all-caps it takes up less space.** Try testing a URL or email in all-caps: if it doesn't raise an error, it may save a little space.
+
+For example:
+
+```html
+<div data-qr-mode="text">HTTPS://TINYURL.COM/TRMNL-QR-EXAMPLE</div>
+<div data-qr-mode="sms"
+  data-sms-number="+1310-807-3956"
+  data-sms-message="can you open up the door"
+  ></div>
+<div data-qr-mode="wifi"
+  data-wifi-ssid="Moria"
+  data-wifi-password="mellon"
+  ></div>
+```
 
 Then, at the bottom of the page (the order is important!), place:
 

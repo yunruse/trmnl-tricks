@@ -18,7 +18,11 @@ Array.from(document.querySelectorAll('[data-qr-mode]')).forEach(element => {
                 + (attr('wifi-hidden') ? 'H:true;' : '')
                 + `;`
             break;
-        // TODO: more kinds!
+        case 'sms':
+            let sM = attr('sms-message');
+            text = `sms:${attr('sms-number')}${sM ? ('?body='+encodeURI(sM)) : ''}`
+            break;
+        // TODO: `geo`
         default:
             text = element.innerText;
             break;
