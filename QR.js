@@ -12,7 +12,7 @@ Array.from(document.querySelectorAll('[data-qr-mode]')).forEach(element => {
     let text;
     switch (attr('qr-mode')) {
         case 'wifi':
-            let text = `WIFI:S:${attr('wifi-ssid')};`
+            text = `WIFI:S:${attr('wifi-ssid')};`
                 + `T:${attr('wifi-encryption') || 'WPA'};`
                 + `P:${attr('wifi-password')};`
                 + (attr('wifi-hidden') ? 'H:true;' : '')
@@ -21,9 +21,9 @@ Array.from(document.querySelectorAll('[data-qr-mode]')).forEach(element => {
         // TODO: more kinds!
         default:
             text = element.innerText;
-            element.innerText = "";
             break;
     }
+    element.innerText = "";
 
     const qrErrCorr = { L: 1, M: 0, Q: 3, H: 2 };
     let correctLevel = qrErrCorr[attr('qr-correction')] || qrErrCorr.L;
