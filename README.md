@@ -7,6 +7,7 @@ I'm here with a bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation.
 ## Table of contents
 
 - [Metadata and general tips](#metadata-and-general-tips)
+  - [FYI: Developer Edition is per device!](#fyi-developer-edition-is-per-device)
   - [Using form variables in plugins](#using-form-variables-in-plugins), as defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder)
   - [Adding custom HTML to forms](#adding-custom-html-to-forms) (_thanks to datacompboy_)
   - [Forking an official plugin](#forking-an-official-plugin)
@@ -17,6 +18,14 @@ I'm here with a bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation.
   - [QR codes](#qr-codes)
 
 ## Metadata and general tips
+
+### FYI: Developer Edition is per device!
+
+_This is accurate as of April 2025._
+
+If you buy multiple TRMNLs, Developer Edition - which allows you to do pretty much everything here - is per device.
+
+Note that if you don't have Developer Edition, you can **install but not fork** a recipe. Keep this in mind if you want your recipe to be more accessible to others.
 
 ### Using form variables in plugins
 Rather than put your key into a polling URL or header, you can use `{{variables}}`
