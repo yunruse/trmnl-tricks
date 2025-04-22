@@ -1,9 +1,6 @@
 # TRMNL Tips and Tricks
 
-Hihi! I'm Mia, creator of such TRMNL plugins as
-<!-- - Cats, Dogs and Cat Facts -->
-- [Daily Tarot](https://usetrmnl.com/recipes/35833/install)
-- [Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install)
+Hihi! I'm Mia, creator of such TRMNL plugins as [Daily Tarot](https://usetrmnl.com/recipes/35833/install), [Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install) and so on.
 
 I'm here with a bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation. Hopefully they help out a bit!
 
