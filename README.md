@@ -119,35 +119,38 @@ No need for `translate: transform` headaches! If you want rotated labels on an [
 
 ### QR Codes
 
-To display a QR code, insert a `<div data-qr-mode="{MODE}"></div>` element, and then add a handful of code at the bottom of your page (see the bottom of this section).
+To display a QR code, insert a `<qr></qr>` element, and then add a handful of code at the bottom of your page (see the bottom of this section).
 
-Depending on the mode, that `<div>` may contain:
+By default, minimum error correction (`qr-correction="L"`) is used, as unlike paper, digital displays tend not to tear.
 
-- `text`: The element's inner text will be used as the text to display in the QR code. This can also work for:
-  - URLs starting with `http://` or `https://`
-  - email addresses with `mailto:` before them
-  - telephone numbers with `tel:` before them
+For basic text, such as a URL, simply put it in the element text. For other formats, you may use these attributes instead:
 
-- `sms`: The `data-sms-number` attribute is used; optionally you can add `data-sms-message`.
-- `wifi`: The `data-wifi-ssid` and `data-wifi-password` attributes are used.
+- For email, provide a `qr-email-address`.
+- For telephone, provide a `qr-telephone`.
+
+- For SMS, provide a `qr-sms-number`; optionally you may add a `qr-sms-message`.
+- For Wi-Fi logins, provide a `qr-wifi-ssid` and `qr-wifi-password`.
   
-  You may also, optionally, specify `data-wifi-encryption` (by default, WPA is used) or a bare `data-wifi-hidden` for a hidden network.
+  You may also, optionally, specify `qr-wifi-encryption` (by default, WPA is used) or a bare `qr-wifi-hidden` for a hidden network.
+
+- For Apple Shortcuts, provide its name in `qr-apple-shortcut`
 
 > [!TIP]
-> **If your QR code is in all-caps it takes up less space.** Try testing a URL or email in all-caps: if it doesn't raise an error, it may save a little space.
+> **If your QR code is in all-caps it takes up less space.** If you want to squeeze a few pixels of space, try testing a URL or email in all-caps first to see if it works. 
 
 For example:
 
 ```html
-<div data-qr-mode="text">HTTPS://TINYURL.COM/TRMNL-QR-EXAMPLE</div>
-<div data-qr-mode="sms"
-  data-sms-number="+1310-807-3956"
-  data-sms-message="can you open up the door"
-  ></div>
-<div data-qr-mode="wifi"
-  data-wifi-ssid="Moria"
-  data-wifi-password="mellon"
-  ></div>
+<qr>HTTPS://TINYURL.COM/TRMNL-QR-EXAMPLE</qr>
+<qr qr-apple-shortcut="Toggle Orthanc Doors"></qr>
+<qr qr-telephone="+1310-807-3956"></qr>
+<qr qr-sms-number="+1310-807-3956"
+  qr-sms-message="can you open up the door"
+  ></qr>
+<qr qr-wifi-ssid="Moria"
+  qr-wifi-password="mellon"
+  ></qr>
+<qr qr-email-address="gwaihir@eagles.manwe.vlr"></qr>
 ```
 
 Then, at the bottom of the page (the order is important!), place:

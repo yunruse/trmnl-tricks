@@ -1,26 +1,40 @@
-// Adapted, with thanks, from this recipe: https://usetrmnl.com/recipes/14428/install
 
-Array.from(document.querySelectorAll('[data-qr-mode]')).forEach(element => {
-    const attr = t => element.getAttribute(`data-${t}`);
+// Adapted from this recipe: https://usetrmnl.com/recipes/14428/install
 
-    let size = parseInt(attr('qr-size'));
-    if (isNaN(size)) {
-        size = 250;
-        // TODO: Determine *ratio* instead (pixel size) for nice legible unmangled e-ink QRs
+Array.from(document.querySelectorAll('qr')).forEach(element => {
+    const $ = t => element.getAttribute(`qr-${t}`);
+
+    let mode = $('qr-mode')
+    if (!mode) {
+        if ($('email-address')) mode = 'email';
+        if ($('telephone')) mode = 'tel';
+        if ($('sms-number')) mode = 'sms';
+        if ($('wifi-ssid')) mode = 'wifi';
+        if ($('apple-shortcut')) mode = 'apple-shortcut';
     }
 
+
     let text;
-    switch (attr('qr-mode')) {
-        case 'wifi':
-            text = `WIFI:S:${attr('wifi-ssid')};`
-                + `T:${attr('wifi-encryption') || 'WPA'};`
-                + `P:${attr('wifi-password')};`
-                + (attr('wifi-hidden') ? 'H:true;' : '')
-                + `;`
+    switch (mode) {
+        case 'email':
+            text = `mailto:${$('email-address')}`;
+            break;
+        case 'tel':
+            text = `tel:${$('telephone')}`;
             break;
         case 'sms':
-            let sM = attr('sms-message');
-            text = `sms:${attr('sms-number')}${sM ? ('?body='+encodeURI(sM)) : ''}`
+            let sM = $('sms-message');
+            text = `sms:${$('sms-number')}${sM ? ('?body=' + encodeURI(sM)) : ''}`
+            break;
+        case 'wifi':
+            text = `WIFI:S:${$('wifi-ssid')};`
+                + `T:${$('wifi-encryption') || 'WPA'};`
+                + `P:${$('wifi-password')};`
+                + ($('wifi-hidden') ? 'H:true;' : '')
+                + `;`
+            break;
+        case 'apple-shortcut':
+            text = `shortcuts://run-shortcut?name=${$('apple-shortcut')}`;
             break;
         // TODO: `geo`
         default:
@@ -30,16 +44,25 @@ Array.from(document.querySelectorAll('[data-qr-mode]')).forEach(element => {
     element.innerText = "";
 
     const qrErrCorr = { L: 1, M: 0, Q: 3, H: 2 };
-    let correctLevel = qrErrCorr[attr('qr-correction')] || qrErrCorr.L;
+    // Assume the display can be scanned clearly, so needs no correction
+    let correctLevel = qrErrCorr[$('correction')] || qrErrCorr.L;
 
+
+    let qr;
     if (text) {
-        new QRCode(element, {
+        qr = new QRCode(element, {
             text,
-            width: size,
-            height: size,
             correctLevel,
-            colorDark: attr('qr-color-dark') || '#000000',
-            colorLight: attr('qr-color-dark') || '#ffffff',
+            colorDark: $('qr-color-dark') || '#000000',
+            colorLight: $('qr-color-dark') || '#ffffff',
         });
     }
+
+    const pixels_per_cell = 4;
+    const modules = qr._oQRCode.getModuleCount();
+    let size = modules * pixels_per_cell
+
+    let img = element.querySelector('img');
+    img.style.width = `${size}px`;
+    img.style.imageRendering = 'pixelated';
 });
