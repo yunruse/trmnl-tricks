@@ -1,23 +1,34 @@
 # TRMNL Tips and Tricks
 
-Hihi! I'm Mia, creator of such TRMNL plugins as [Daily Tarot](https://usetrmnl.com/recipes/35833/install), [Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install) and so on.
+Hihi! I'm Mia, creator of such plugins as:
+- [Daily Tarot](https://usetrmnl.com/recipes/35833/install)
+- [Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install)
+- [Cats, Dogs and Cat Facts](https://usetrmnl.com/recipes/36529/install)
+- [Persona 5 Calendar](https://cdn.discordapp.com/attachments/1364903605441925180/1364912460275912815/private_plugin_36140.zip?ex=6810ab49&is=680f59c9&hm=7d390e7e780453df285841416d513d32a4e1da1b9318c6edc222d42cc20437cd&), a winner in the [data mode hackathon](https://usetrmnl.com/blog/introducing-data-mode)
 
-I'm here with a bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation. Hopefully they help out a bit!
+Here are a whole bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation. Hope they help!
+
+Any and all feedback, suggestions or errors - please [open an issue](https://github.com/yunruse/trmnl-tricks/issues/new)!
 
 ## Table of contents
 
-- [Metadata and general tips](#metadata-and-general-tips)
+- [Plugin metadata](#plugin-metadata)
   - [FYI: Developer Edition is per device!](#fyi-developer-edition-is-per-device)
-  - [Using form variables in plugins](#using-form-variables-in-plugins), as defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder)
+  - [Using form variables in plugin settings](#using-form-variables-in-plugin-settings), as defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder)
   - [Adding custom HTML to forms](#adding-custom-html-to-forms) (_thanks to datacompboy_)
   - [Forking an official plugin](#forking-an-official-plugin)
+  - [Sending data to a webhook](#sending-data-to-a-webhook)
+  - [Webhook data limits (and tricks to squeeze more data out)](#webhook-data-limits-and-tricks-to-squeeze-more-data-out)
 - [Liquid rendering](#liquid-rendering)
+  - [Sending variables to JavaScript](#sending-variables-to-javascript)
+  - [A whistlestop tour of Liquid filters and operators](#a-whistlestop-tour-of-liquid-filters-and-operators)
   - [Widget height and width](#widget-height-and-width)
 - [TRMNL Framework](#trmnl-framework)
   - [Rotated .item indexes](#rotated-item-indexes)
+  - [Clamp on the word, not the letter](#clamp-on-the-word-not-the-letter)
   - [QR codes](#qr-codes)
 
-## Metadata and general tips
+## Plugin metadata
 
 ### FYI: Developer Edition is per device!
 
@@ -27,7 +38,7 @@ If you buy multiple TRMNLs, Developer Edition - which allows you to do pretty mu
 
 Note that if you don't have Developer Edition, you can **install but not fork** a recipe. Keep this in mind if you want your recipe to be more accessible to others.
 
-### Using form variables in plugins
+### Using form variables in plugin settings
 Rather than put your key into a polling URL or header, you can use `{{variables}}`
 defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder).
 Note that you should **not** use the `trmnl.plugin_settings.custom_fields_values` - just the key name.
@@ -81,7 +92,139 @@ If you want to fork a plugin, here are some templates I've created that do just 
 <!-- - [Stocks]() -->
 <!-- - [Calendar]() -->
 
+### Sending data to a webhook
+
+Webhook data is sent with a POST request using the header `Content-Type: application/json`.
+
+On Python, you can simply `pip install requests` and
+
+```py
+import requests
+URL = "https://usetrmnl.com/api/custom_plugins/{your_plugin_uuid}"
+data = {
+  "my_data": {"a": 1, "b": 2},
+  "foo": "long string",
+}
+
+requests.post(URL, json={'merge_variables': data})
+```
+
+You will either receive the codes:
+
+- _429 Too Many Requests_ – You will receive this if you send data more frequently than every five minutes. **Be mindful of the servers!**
+- _200 OK_ – The response is a JSON object. Check its `message` key: if it is `null` you're fine. If not, it will explain what went wrong.
+
+### Webhook data limits (and tricks to squeeze more data out)
+
+Note that you can only send **2 kibibytes**, i.e. `len(json.dumps(data)) < 2050` in the example above
+
+For maximum clarity, this is the length of the JSON <em>inside</em> of <code>merge_variables</code>. This might be prone to changes.
+
+If you find yourself frequently pushing up against this limit, you can try certain methods to squeeze more data out: 
+- Reduce whitespace if you can. You don't need spaces or newlines.
+
+  For example, `{"foo":"long string","my_data":{"a":1,"b":2}}`.
+- Rename and unpack variables.
+
+  For example `{"c":"long string","a":1,"b":2}`
+- Use zlib to compress. If your data is English text or JSON data, it may be reasonably compressible.
+
+In python, you can, for example:
+
+```py
+def compress(string: str):
+    import zlib, base64
+    return base64.b64encode(
+        zlib.compress(string.encode())).decode()
+```
+
+In JSON you can then extract the data and use it. However, you won't be able to use Liquid; you'll have to render the data in JavaScript:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+<script>
+  const decompress = blob => window.pako.inflate(
+      Uint8Array.from(atob(blob), c => c.charCodeAt(0)),
+      { to: 'string' });
+
+  // document.querySelector('#myElement').innerText
+  //   = decompress({{lyrics}})
+</script>
+```
+
+If you want to pass a JSON object, consider `string = compress(json.dumps(data))` in Python and and `data = JSON.parse(decompress(string))` in JS.
+
 ## Liquid rendering
+
+Check out the documentation!
+- [Liquid documentation](https://shopify.dev/docs/api/liquid)
+- [Shopify's Liquid filters](https://shopify.dev/docs/api/liquid/filters)
+- [TRMNL's Liquid filters](https://help.usetrmnl.com/en/articles/10347358-custom-plugin-filters)
+
+### Sending variables to JavaScript
+
+No need to do strange iteration to define an object or list for JS – you can always simply use, for example:
+
+```js
+let some_list = JSON.parse(`{{data.my_list | json}}`)
+```
+
+### A whistlestop tour of Liquid filters and operators
+
+#### Filters
+
+Filters are great for transforming things -- uppercase, split or otherwise. While certain data structures might require using JS (or very arcane Liquid) there are many cases where you can have filters handle it for you.
+
+For example, you might use:
+
+```liquid
+{% assign foo = data.first_name | default: "No name found" | prepend: "Hi, " | append "!" %}
+<h1>Hi, {{data.first_name}}</h1>
+```
+
+#### Operators in Liquid context
+
+As you've just seen, you don't need just `{{expression}}` - you can use `{%operators%}`, too. For example:
+
+
+
+```liquid
+{% for i in (1..10) %}
+  {% assign i2 = i | modulo: 2 %}
+  {% if i < 3 %}
+    {% continue %}
+  {% elsif i == 5 %}
+    (high five!) 
+  {% elsif i2 == 1 %}
+    {{i | at_most: 7}} and
+  {% else %}
+    {% cycle 'boots and ', 'cats and ' %}
+  {% endif %}
+{% endfor %}
+```
+
+would show up as `3 and boots and (high five!) cats and 7 and boots and 7 and cats and`.
+
+If that's unwieldy you can also use a `liquid` block:
+
+```
+{% assign numbers = (1..10) %}
+{% liquid
+   for i in numbers
+     assign i2 = i | modulo: 2
+     if i < 3
+       continue
+     elsif i == 5
+       echo "(high five!) "
+     elsif i2 == 1
+       echo i | at_most: 7
+       echo " and "
+     else
+       cycle 'boots and ', 'cats and '
+     endif
+   endfor
+%}
+```
 
 ### Widget height and width
 
@@ -104,6 +247,8 @@ If your plugin needs to know the height/width, use this:
 
 ## TRMNL Framework
 
+The [Framework design system](https://usetrmnl.com/framework) is wonderful. Here are a bunch of snippets and extensions that might help with certain things.
+
 ### Rotated .item indexes
 
 ![image width=40](https://gist.github.com/user-attachments/assets/4e8eb4cc-2099-4279-ab09-ea8c9308c7a2)
@@ -117,11 +262,38 @@ No need for `translate: transform` headaches! If you want rotated labels on an [
 }
 ```
 
+### Clamp on the word, not the letter
+
+By default, `clamp--2` (etc) will clamp on the letter, not the word. If you're okay with a little less space, consider adding `clamp--nicely` and adding to a stylesheet:
+
+```css
+.clamp--nicely {
+  word-break: normal !important;
+}
+```
+
 ### QR Codes
 
-To display a QR code, insert a `<qr></qr>` element, and then add a handful of code at the bottom of your page (see the bottom of this section).
+To display a QR code, insert a `<qr></qr>` element, and then add a handful of code at the _bottom_ of your page:
 
-By default, minimum error correction (`qr-correction="L"`) is used, as unlike paper, digital displays tend not to tear.
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/yunruse/trmnl-tricks/QR.js" defer></script>
+<style>
+  qr img {
+    border: 10px solid white;
+    display: inline;
+  }
+  qr img {
+    display: inline !important;
+  }
+</style>
+```
+
+#### QR Contents
+
+> [!TIP]
+> **If your QR code is in all-caps it takes up less space.** If you're super low on space, try a URL shortener in all-caps.
 
 For basic text, such as a URL, simply put it in the element text. For other formats, you may use these attributes instead:
 
@@ -134,9 +306,6 @@ For basic text, such as a URL, simply put it in the element text. For other form
   You may also, optionally, specify `qr-wifi-encryption` (by default, WPA is used) or a bare `qr-wifi-hidden` for a hidden network.
 
 - For Apple Shortcuts, provide its name in `qr-apple-shortcut`
-
-> [!TIP]
-> **If your QR code is in all-caps it takes up less space.** If you want to squeeze a few pixels of space, try testing a URL or email in all-caps first to see if it works. 
 
 For example:
 
@@ -151,20 +320,4 @@ For example:
   qr-wifi-password="mellon"
   ></qr>
 <qr qr-email-address="gwaihir@eagles.manwe.vlr"></qr>
-```
-
-Then, at the bottom of the page (the order is important!), place:
-
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-<script src="https://cdn.jsdelivr.net/gh/yunruse/trmnl-tricks/QR.js" defer></script>
-<style>
-  qr img {
-    border: 10px solid white;
-    display: inline;
-  }
-  qr img {
-    display: inline !important;
-  }
-</style>
 ```
