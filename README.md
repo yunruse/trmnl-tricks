@@ -152,7 +152,17 @@ In JSON you can then extract the data and use it. However, you won't be able to 
 </script>
 ```
 
-If you want to pass a JSON object, consider `string = compress(json.dumps(data))` in Python and and `data = JSON.parse(decompress(string))` in JS.
+If you want to pass a JSON object, consider
+
+```python
+string = compress(json.dumps(data, separators=(',', ':')))
+```
+ in Python and and
+ 
+```js
+data = JSON.parse(decompress(string)
+```
+in JS.
 
 ## Liquid rendering
 
