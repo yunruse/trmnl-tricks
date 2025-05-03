@@ -24,7 +24,7 @@ Any and all feedback, suggestions or errors - please [open an issue](https://git
   - [A whistlestop tour of Liquid filters and operators](#a-whistlestop-tour-of-liquid-filters-and-operators)
   - [Widget height and width](#widget-height-and-width)
 - [TRMNL Framework](#trmnl-framework)
-  - [Rotated .item indexes](#rotated-item-indexes)
+  - [Rotated `.item` indexes](#rotated-item-indexes)
   - [Clamp on the word, not the letter](#clamp-on-the-word-not-the-letter)
   - [QR codes](#qr-codes)
 
@@ -41,39 +41,44 @@ Note that if you don't have Developer Edition, you can **install but not fork** 
 ### Using form variables in plugin settings
 Rather than put your key into a polling URL or header, you can use `{{variables}}`
 defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder).
-Note that you should **not** use the `trmnl.plugin_settings.custom_fields_values` - just the key name.
+Note that you should **not** use the `trmnl.plugin_settings.custom_fields_values` - just the key name:
 
-![image](https://gist.github.com/user-attachments/assets/d69defcf-a1bf-4108-9880-7ff4a3d138b7)
+<img width="547" alt="434958544-d69defcf-a1bf-4108-9880-7ff4a3d138b7" src="https://github.com/user-attachments/assets/228a5aa4-aa4b-499d-b2de-fc2f4a06ee9f" />
 
 
 ### Adding custom HTML to forms
 _thanks to datacompboy for this tip!_
 
-You can use `<br>`, `<strong>`/`<b>` and `<a>` tags in form descriptions, alongside `class`, `href` and `target="_blank"`. For example:
+You may:
+  - Use `field-type: description` for an empty form -- useful for documentation!
+  - Use `help_text`, which will appear below the form. This can be handy for implementation details or a link to a reference document.
+  - Use HTML inside of a `description` or `help_text`. Specifically, you can use the elements `<br>`, `<strong>`/`<b>` and `<a>` tags in form descriptions, alongside `class`, `href` and `target="_blank"`.
+   
+For example:
 
 ```yml
-- keyname: __
+- keyname: desc1
   field_type: description
-  name: Usage instructions
+  name: Welcome to the Orthanc Door Controls
   description: >
-    You need to have <a href="https://nightscout.github.io/" class="underline">Nightscout-compatible</a> server.<br/>
-    If you don't know what it is -- just install <a href="https://gluroo.com/" class="underline">Gluroo</a> app on your phone,<br/>
-    and go to <strong class="bg-blue-100">Menu -&gt; Devices -&gt; OTHER tab</strong> to find your Nightscout URL and API secret.
-    
-- keyname: ___
-  field_type: description
-  name: WARNING DO NOT USE THIS PLUGIN FOR MEDICATION DECISIONS
-  description: >
-    <b>Follow medical advise from medical specialists.</b><br/>
-    While you can see graph from the device here, it may be
-    <b class="text-blue-400">outdated</b>, sometimes by an hour or more;
-    the plugin graph is mere convenience, but <b>NOT</b> for decisions.<br />
-    <b class="text-red-400">If you feel bad, contact 112 or 911 or whatever your emergency number is!</b>
+    <b class="text-red-400">Warning: not suitable for non-wizards!</b>
+    <br/>
+    Please see <a class="underline" href="https://en.wikipedia.org/wiki/Isengard">Isengard Documentation</a> for more.
+    <br/>
+    If <b class="text-blue-400">Saruman</b> keeps undoing your decisions, go to <a class="bg-blue-100">Settings -&gt; Saruman -&gt; Draw As If Poison From A Wound</a>.
+
+- keyname: my_bool
+  field_type: select
+  name: Let Balrog in?
+  options:
+  - "You shall pass": true
+  - "YOU SHALL NOT PASS": false
+  help_text: Make sure you are a servant of the Secret Fire, wielder of the flame of Anor first.
 ```
 
 will produce:
 
-![image](https://gist.github.com/user-attachments/assets/49098a37-4bdc-438f-9b20-a6fd7fae61cf)
+<img width="567" alt="ss 2025-04-28 at 19 00 39" src="https://github.com/user-attachments/assets/1f381a1c-8e20-40b7-a613-5254f5f8016e" />
 
 ### Forking an official plugin
 
@@ -259,7 +264,7 @@ If your plugin needs to know the height/width, use this:
 
 The [Framework design system](https://usetrmnl.com/framework) is wonderful. Here are a bunch of snippets and extensions that might help with certain things.
 
-### Rotated .item indexes
+### Rotated `.item` indexes
 
 ![image width=40](https://gist.github.com/user-attachments/assets/4e8eb4cc-2099-4279-ab09-ea8c9308c7a2)
 
@@ -283,6 +288,9 @@ By default, `clamp--2` (etc) will clamp on the letter, not the word. If you're o
 ```
 
 ### QR Codes
+
+![qr](https://github.com/user-attachments/assets/83f4143b-2b9c-4b48-8a36-83118b581aca)
+
 
 To display a QR code, insert a `<qr></qr>` element, and then add a handful of code at the _bottom_ of your page:
 
