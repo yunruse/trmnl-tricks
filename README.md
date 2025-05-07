@@ -20,6 +20,7 @@ Any and all feedback, suggestions or errors - please [open an issue](https://git
   - [Sending data to a webhook](#sending-data-to-a-webhook)
   - [Webhook data limits (and tricks to squeeze more data out)](#webhook-data-limits-and-tricks-to-squeeze-more-data-out)
 - [Liquid rendering](#liquid-rendering)
+  - [Getting the right timezone](#getting-the-right-timezone)
   - [Sending variables to JavaScript](#sending-variables-to-javascript)
   - [A whistlestop tour of Liquid filters and operators](#a-whistlestop-tour-of-liquid-filters-and-operators)
   - [Widget height and width](#widget-height-and-width)
@@ -175,6 +176,34 @@ Check out the documentation!
 - [Liquid documentation](https://shopify.dev/docs/api/liquid)
 - [Shopify's Liquid filters](https://shopify.dev/docs/api/liquid/filters)
 - [TRMNL's Liquid filters](https://help.usetrmnl.com/en/articles/10347358-custom-plugin-filters)
+
+### Getting the right timezone
+
+_Time is an illusion. Lunchtime, doubly so._
+
+TRMNL does respect your time zone (as set in [_About_](https://usetrmnl.com/account)), plus any daylight savings, as stored in the `trmnl` variables. However, eking those out into _your_ current time may be a tiny effort:
+
+#### In Liquid
+
+Don't forget that TRMNL provides Liquid with the _UTC_ time and your offset _from_ UTC. If you'd like to set a custom time, try:
+
+```liquid
+{% assign time = trmnl.user.utc_offset
+| plus: trmnl.system.timestamp_utc
+| date: "%F %T%z" %}
+```
+
+The `date` filter turns a number into a formatted date; you might want to just set it to the number and format it in multiple ways separately. `date`'s format, such as `%F %T%z`, uses symbols [common to all strftime methods](https://strftime.org)
+
+#### In JavaScript
+
+JavaScript, likewise, assumes your time zone is in UTC. It's not the prettiest method, but to guarantee your date is right, try:
+
+```js
+const NOW = new Date(new Date().valueOf() + {{trmnl.user.utc_offset}} * 1000);
+```
+
+Note that while `trmnl.user` contains correct information, JavaScript will continue to misremember your time zone. Be careful and make sure to test well just in case!
 
 ### Sending variables to JavaScript
 
