@@ -1,5 +1,8 @@
 # TRMNL Tips and Tricks
 
+![Commit count](https://img.shields.io/github/commit-activity/t/yunruse/trmnl-tricks?label=version)
+![Last commit date](https://img.shields.io/github/last-commit/yunruse/trmnl-tricks?label=correct%20as%20of%20)
+
 Hihi! I'm Mia, creator of such plugins as:
 - [Daily Tarot](https://usetrmnl.com/recipes/35833/install)
 - [Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install)
@@ -14,6 +17,7 @@ Any and all feedback, suggestions or errors - please [open an issue](https://git
 
 - [Plugin metadata](#plugin-metadata)
   - [FYI: Developer Edition is per device!](#fyi-developer-edition-is-per-device)
+  - [Installing vs Forking](#installing-vs-forking)
   - [Using form variables in plugin settings](#using-form-variables-in-plugin-settings), as defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder)
   - [Adding custom HTML to forms](#adding-custom-html-to-forms) (_thanks to datacompboy_)
   - [Forking an official plugin](#forking-an-official-plugin)
@@ -33,11 +37,21 @@ Any and all feedback, suggestions or errors - please [open an issue](https://git
 
 ### FYI: Developer Edition is per device!
 
-_This is accurate as of April 2025._
-
 If you buy multiple TRMNLs, Developer Edition - which allows you to do pretty much everything here - is per device.
 
 Note that if you don't have Developer Edition, you can **install but not fork** a recipe. Keep this in mind if you want your recipe to be more accessible to others.
+
+### Installing vs Forking
+
+Any recipe can be forked, and any recipe without custom forms can be installed. What does that mean, exactly, for your users? Well:
+
+|                      | Installing | Forking |
+| -------------------- | ---------- | ------- |
+| Anyone can do it     | ✅  | ❌ Requires Developer Edition |
+| Can change custom plugin settings | ❌ Adding custom forms means people need Dev Edition to use your recipe! | ✅ |
+| Synchronises         | ✅ The plugin will look the same for everyone, saving on rendering. | ❌ |
+| User's timezone?     | ❌ Being synced, it will use the _creator's_ time zone, if that's important for anything. | ✅ |
+| Stays up-to-date     | ✅ | ❌ Users will need to re-fork your recipe if you make useful updates. |
 
 ### Using form variables in plugin settings
 Rather than put your key into a polling URL or header, you can use `{{variables}}`
