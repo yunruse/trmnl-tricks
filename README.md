@@ -136,11 +136,27 @@ You will either receive the codes:
 
 ### Webhook data limits (and tricks to squeeze more data out)
 
-Note that you can only send **2 kibibytes**, i.e. `len(json.dumps(data)) < 2050` in the example above
+Note that you can only send **2 kibibytes**, i.e. `len(json.dumps(data)) < 2050` in the example above.
 
 For maximum clarity, this is the length of the JSON <em>inside</em> of <code>merge_variables</code>. This might be prone to changes.
 
-If you find yourself frequently pushing up against this limit, you can try certain methods to squeeze more data out: 
+#### Using `deep_merge` 
+
+If you set `deep_merge` as `"true"` (not `true` - it must be a string!) then dictionary objects will be merged-in by key, rather than replacing the entire variable state.
+
+```py
+# state: {"a": {"b": {"first": 1}}}
+requests.post(URL, json={'merge_variables': {"a": {"b": {"second": 2}}}, "deep_merge": "true"})
+# state: {"a": {"b": {"first": 1, "second": 2}}}
+requests.post(URL, json={'merge_variables': {"xyz": "true"}, "deep_merge": "true"})
+# state: {"a": {"b": {"first": 1, "second": 2}}, "xyz": "true"}
+```
+
+Note that while arbitrarily deep, this only works on nested object keys, and not arrays. Thus if you have a list you want to append to, it may help to invent arbitrary keys (eg insertion time or index).
+
+#### Squeezing out even more data
+
+If you're somehow still pressed for space, the following tips may help:
 - Reduce whitespace if you can. You don't need spaces or newlines.
 
   For example, `{"foo":"long string","my_data":{"a":1,"b":2}}`.
@@ -158,7 +174,7 @@ def compress(string: str):
         zlib.compress(string.encode())).decode()
 ```
 
-In JSON you can then extract the data and use it. However, you won't be able to use Liquid; you'll have to render the data in JavaScript:
+However, you won't be able to decompress in Liquid; you'll have to render the data in JavaScript:
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
