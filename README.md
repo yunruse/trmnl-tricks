@@ -5,8 +5,11 @@
 
 Hihi! I'm Mia, creator of such plugins as:
 - [Daily Tarot](https://usetrmnl.com/recipes/35833/install)
+- [Daily Rituals](https://usetrmnl.com/recipes/47433/install)
 - [Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install)
 - [Cats, Dogs and Cat Facts](https://usetrmnl.com/recipes/36529/install)
+- [MEE6 Discord Leaderboard Status](https://usetrmnl.com/recipes/48539/install)
+- [The Yetee Shirts of the Day](https://usetrmnl.com/recipes/83869/install)
 - [Persona 5 Calendar](https://cdn.discordapp.com/attachments/1364903605441925180/1364912460275912815/private_plugin_36140.zip?ex=6810ab49&is=680f59c9&hm=7d390e7e780453df285841416d513d32a4e1da1b9318c6edc222d42cc20437cd&), a winner in the [data mode hackathon](https://usetrmnl.com/blog/introducing-data-mode)
 
 Here are a whole bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation. Hope they help!
@@ -52,6 +55,8 @@ Any recipe can be forked, and any recipe without custom forms can be installed. 
 | Synchronises         | ✅ The plugin will look the same for everyone, saving on rendering. | ❌ |
 | User's timezone?     | ❌ Being synced, it will use the _creator's_ time zone, if that's important for anything. | ✅ |
 | Stays up-to-date     | ✅ | ❌ Users will need to re-fork your recipe if you make useful updates. |
+
+Note that plugins with just an `author_bio` are installable - no worries there.
 
 ### Using form variables in plugin settings
 Rather than put your key into a polling URL or header, you can use `{{variables}}`
@@ -138,21 +143,31 @@ You will either receive the codes:
 
 Note that you can only send **2 kibibytes**, i.e. `len(json.dumps(data)) < 2050` in the example above.
 
-For maximum clarity, this is the length of the JSON <em>inside</em> of <code>merge_variables</code>. This might be prone to changes.
+For maximum clarity, this is the length of the JSON <em>inside</em> of <code>merge_variables</code>; the outside JSON may contain other instructions or metadata (see below).
 
-#### Using `deep_merge` 
+#### Using `deep_merge` to extend objects
 
-If you set `deep_merge` as `"true"` (not `true` - it must be a string!) then dictionary objects will be merged-in by key, rather than replacing the entire variable state.
+If you set `"merge_strategy": "deep_merge"`, then dictionary objects will be merged-in by key, rather than replacing the entire variable state. This is arbitrarily deep, but only works on objects. For example:
 
 ```py
 # state: {"a": {"b": {"first": 1}}}
-requests.post(URL, json={'merge_variables': {"a": {"b": {"second": 2}}}, "deep_merge": "true"})
+requests.post(URL, json={'merge_variables': {"a": {"b": {"second": 2}}}, "merge_strategy": "deep_merge"})
 # state: {"a": {"b": {"first": 1, "second": 2}}}
-requests.post(URL, json={'merge_variables': {"xyz": "true"}, "deep_merge": "true"})
+requests.post(URL, json={'merge_variables': {"xyz": "true"}, "merge_strategy": "deep_merge"})
 # state: {"a": {"b": {"first": 1, "second": 2}}, "xyz": "true"}
 ```
 
-Note that while arbitrarily deep, this only works on nested object keys, and not arrays. Thus if you have a list you want to append to, it may help to invent arbitrary keys (eg insertion time or index).
+#### Using `streaming` to extend arrays
+
+If you set `"merge_strategy": "stream"`, top-level arrays will instead be appended. You may also set a `"stream_limit"` to truncate. For example:
+
+```py
+# state: {"a": [1, 2]}
+requests.post(URL, json={'merge_variables': {"a": [3, 4, 5, 6, 7]}, "merge_strategy": "stream"})
+# state: {"a": [1, 2, 3, 4, 5, 6, 7]}
+requests.post(URL,json={'merge_variables': {"a": [8, 9]}, "merge_strategy": "stream", "stream_limit": 4})
+# state: {"a": [6, 7, 8, 9]}
+```
 
 #### Squeezing out even more data
 
