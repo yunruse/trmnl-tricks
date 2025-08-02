@@ -3,14 +3,14 @@
 ![Commit count](https://img.shields.io/github/commit-activity/t/yunruse/trmnl-tricks?label=version)
 ![Last commit date](https://img.shields.io/github/last-commit/yunruse/trmnl-tricks?label=correct%20as%20of%20)
 
-Hihi! I'm Mia, creator of such plugins as:
-- [Daily Tarot](https://usetrmnl.com/recipes/35833/install)
-- [Daily Rituals](https://usetrmnl.com/recipes/47433/install)
-- [Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install)
-- [Cats, Dogs and Cat Facts](https://usetrmnl.com/recipes/36529/install)
-- [MEE6 Discord Leaderboard Status](https://usetrmnl.com/recipes/48539/install)
-- [The Yetee Shirts of the Day](https://usetrmnl.com/recipes/83869/install)
-- [Persona 5 Calendar](https://cdn.discordapp.com/attachments/1364903605441925180/1364912460275912815/private_plugin_36140.zip?ex=6810ab49&is=680f59c9&hm=7d390e7e780453df285841416d513d32a4e1da1b9318c6edc222d42cc20437cd&), a winner in the [data mode hackathon](https://usetrmnl.com/blog/introducing-data-mode)
+Hihi! I'm Mia, creator of such plugins as
+[Daily Tarot](https://usetrmnl.com/recipes/35833/install),
+[Daily Rituals](https://usetrmnl.com/recipes/47433/install),
+[Toki Pona Word of the Day](https://usetrmnl.com/recipes/36529/install),
+[Cats, Dogs and Cat Facts](https://usetrmnl.com/recipes/36529/install),
+[MEE6 Discord Leaderboard Status](https://usetrmnl.com/recipes/48539/install),
+[The Yetee Shirts of the Day](https://usetrmnl.com/recipes/83869/install) and
+[Persona 5 Calendar](https://cdn.discordapp.com/attachments/1364903605441925180/1364912460275912815/private_plugin_36140.zip?ex=6810ab49&is=680f59c9&hm=7d390e7e780453df285841416d513d32a4e1da1b9318c6edc222d42cc20437cd&), a winner in the [data mode hackathon](https://usetrmnl.com/blog/introducing-data-mode).
 
 Here are a whole bunch of tips for [TRMNL](https://usetrmnl.com) plugin creation. Hope they help!
 
@@ -40,9 +40,9 @@ Any and all feedback, suggestions or errors - please [open an issue](https://git
 
 ### FYI: Developer Edition is per device!
 
-If you buy multiple TRMNLs, Developer Edition - which allows you to do pretty much everything here - is per device.
+If you buy multiple TRMNLs, Developer Edition - which allows you to do pretty much everything here - is per device. There are [official workarounds](https://help.usetrmnl.com/en/articles/11629486-calculating-byod-and-dev-edition-add-ons), however.
 
-Note that if you don't have Developer Edition, you can **install but not fork** a recipe. Keep this in mind if you want your recipe to be more accessible to others.
+Note that if you don't have Developer Edition, you can **install but not fork** a recipe. If you're a developer, keep this in mind if you want your recipe to be more accessible to others.
 
 ### Installing vs Forking
 
