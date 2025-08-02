@@ -42,37 +42,22 @@ Any and all feedback, suggestions or errors - please [open an issue](https://git
 
 If you buy multiple TRMNLs, Developer Edition - which allows you to do pretty much everything here - is per device. There are [official workarounds](https://help.usetrmnl.com/en/articles/11629486-calculating-byod-and-dev-edition-add-ons), however.
 
-Note that if you don't have Developer Edition, you can **install but not fork** a recipe. If you're a developer, keep this in mind if you want your recipe to be more accessible to others.
+### FYI: Installation works with forms (and is better than forking)
 
-### Installing vs Forking
-
-Any recipe can be forked, and any recipe without custom forms can be installed. What does that mean, exactly, for your users? Well:
-
-|                      | Installing | Forking |
-| -------------------- | ---------- | ------- |
-| Anyone can do it     | ✅  | ❌ Requires Developer Edition |
-| Can change custom plugin settings | ❌ Adding custom forms means people need Dev Edition to use your recipe! | ✅ |
-| Synchronises         | ✅ The plugin will look the same for everyone, saving on rendering. | ❌ |
-| User's timezone?     | ❌ Being synced, it will use the _creator's_ time zone, if that's important for anything. | ✅ |
-| Stays up-to-date     | ✅ | ❌ Users will need to re-fork your recipe if you make useful updates. |
-
-Note that plugins with just an `author_bio` are installable - no worries there.
+Developer Edition is required to **fork** a plugin. [As of July 10](https://www.reddit.com/r/trmnl/comments/1lwma99/community_plugins_recipes_are_now_installable_by/), forking is only useful if you want to modify the behaviour of the plugin. If you want to use custom forms – Developer Edition or no – then **installation** is the better option, as it allows the recipe to auto-update (for new features, to respond to API changes, to fix glitches, etc).
 
 ### Using form variables in plugin settings
 Rather than put your key into a polling URL or header, you can use `{{variables}}`
-defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder).
-Note that you should **not** use the `trmnl.plugin_settings.custom_fields_values` - just the key name:
+defined in [custom forms](https://help.usetrmnl.com/en/articles/10513740-custom-plugin-form-builder) _directly_ in forms. You can also use `trmnl`:
 
-<img width="547" alt="434958544-d69defcf-a1bf-4108-9880-7ff4a3d138b7" src="https://github.com/user-attachments/assets/228a5aa4-aa4b-499d-b2de-fc2f4a06ee9f" />
-
+<img width="538" height="174" alt="ss 2025-08-02 at 15 39 49" src="https://github.com/user-attachments/assets/6b1107d1-876a-4d6d-87f3-4a4444e048eb" />
 
 ### Adding custom HTML to forms
 _thanks to datacompboy for this tip!_
 
-You may:
-  - Use `field-type: description` for an empty form -- useful for documentation!
-  - Use `help_text`, which will appear below the form. This can be handy for implementation details or a link to a reference document.
-  - Use HTML inside of a `description` or `help_text`. Specifically, you can use the elements `<br>`, `<strong>`/`<b>` and `<a>` tags in form descriptions, alongside `class`, `href` and `target="_blank"`.
+You may want to decorate the mandatory `field-type: author_bio`, or `field-type: description`. Alternatively, you might want to add `help_text` to a form, which appears below the form (handy for implementation details or link to a reference document.
+
+To that end, you can use a limited subset of HTML. Specifically, you can use the elements `<br>`, `<strong>`/`<b>` and `<a>` tags in form descriptions, alongside `class`, `href` and `target="_blank"`.
    
 For example:
 
@@ -81,11 +66,11 @@ For example:
   field_type: description
   name: Welcome to the Orthanc Door Controls
   description: >
-    <b class="text-red-400">Warning: not suitable for non-wizards!</b>
+    <b class="text-red-600">Warning: not suitable for non-wizards!</b>
     <br/>
     Please see <a class="underline" href="https://en.wikipedia.org/wiki/Isengard">Isengard Documentation</a> for more.
     <br/>
-    If <b class="text-blue-400">Saruman</b> keeps undoing your decisions, go to <a class="bg-blue-100">Settings -&gt; Saruman -&gt; Draw As If Poison From A Wound</a>.
+    If <b class="text-blue-800">Saruman</b> keeps undoing your decisions, go to <a class="bg-emerald-100">Settings -&gt; Saruman -&gt; Draw As If Poison From A Wound</a>.
 
 - keyname: my_bool
   field_type: select
@@ -93,12 +78,12 @@ For example:
   options:
   - "You shall pass": true
   - "YOU SHALL NOT PASS": false
-  help_text: Make sure you are a servant of the Secret Fire, wielder of the flame of Anor first.
+  help_text: Make sure you are a servant of the <b class="text-red-400">Secret Fire</b>, wielder of the <b class="text-red-400">flame of Anor</b> first.
 ```
 
 will produce:
 
-<img width="567" alt="ss 2025-04-28 at 19 00 39" src="https://github.com/user-attachments/assets/1f381a1c-8e20-40b7-a613-5254f5f8016e" />
+<img width="563" height="242" alt="ss 2025-08-02 at 15 44 45" src="https://github.com/user-attachments/assets/fba395ad-8a93-407f-b30e-0c0c746511d7" />
 
 ### Forking an official plugin
 
@@ -125,12 +110,11 @@ On Python, you can simply `pip install requests` and
 
 ```py
 import requests
-URL = "https://usetrmnl.com/api/custom_plugins/{your_plugin_uuid}"
+URL = f"https://usetrmnl.com/api/custom_plugins/{your_plugin_uuid}"
 data = {
-  "my_data": {"a": 1, "b": 2},
+  "my_data": {"a": 1, "b": [1, 2, 3]},
   "foo": "long string",
 }
-
 requests.post(URL, json={'merge_variables': data})
 ```
 
@@ -159,7 +143,7 @@ requests.post(URL, json={'merge_variables': {"xyz": "true"}, "merge_strategy": "
 
 #### Using `streaming` to extend arrays
 
-If you set `"merge_strategy": "stream"`, top-level arrays will instead be appended. You may also set a `"stream_limit"` to truncate. For example:
+If you set `"merge_strategy": "stream"`, top-level arrays will instead be appended to. You may also set a `"stream_limit"` to truncate. For example:
 
 ```py
 # state: {"a": [1, 2]}
@@ -197,23 +181,9 @@ However, you won't be able to decompress in Liquid; you'll have to render the da
   const decompress = blob => window.pako.inflate(
       Uint8Array.from(atob(blob), c => c.charCodeAt(0)),
       { to: 'string' });
-
-  // document.querySelector('#myElement').innerText
-  //   = decompress({{lyrics}})
+  document.querySelector('#myElement').innerText = decompress({{myText | json}})
 </script>
 ```
-
-If you want to pass a JSON object, consider
-
-```python
-string = compress(json.dumps(data, separators=(',', ':')))
-```
- in Python and and
- 
-```js
-data = JSON.parse(decompress(string)
-```
-in JS.
 
 ## Liquid rendering
 
@@ -233,12 +203,10 @@ TRMNL does respect your time zone (as set in [_About_](https://usetrmnl.com/acco
 Don't forget that TRMNL provides Liquid with the _UTC_ time and your offset _from_ UTC. If you'd like to set a custom time, try:
 
 ```liquid
-{% assign time = trmnl.user.utc_offset
-| plus: trmnl.system.timestamp_utc
-| date: "%F %T%z" %}
+{% assign time = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset | date: "%F %T%z" %}
 ```
 
-The `date` filter turns a number into a formatted date; you might want to just set it to the number and format it in multiple ways separately. `date`'s format, such as `%F %T%z`, uses symbols [common to all strftime methods](https://strftime.org)
+The `date` filter turns a number into a formatted date; you might want to just set it to the number and format it in multiple ways separately. `date`'s format, such as `%F %T%z`, uses symbols [common to all strftime methods](https://strftime.org).
 
 #### In JavaScript
 
@@ -252,7 +220,7 @@ Note that while `trmnl.user` contains correct information, JavaScript will conti
 
 ### Sending variables to JavaScript
 
-No need to do strange iteration to define an object or list for JS – you can always simply use, for example:
+If you want to pass an object directly into JavaScript, no need to iterate or parse yourself – try for example:
 
 ```js
 let some_list = JSON.parse(`{{data.my_list | json}}`)
